@@ -82,7 +82,7 @@
             }
           },
           {
-            "name": "unique",
+            "name": "isUnique",
             "in": "query",
             "description": "Нужно ли учитывать только уникальные посещения (только с уникальным ip)",
             "required": false,
