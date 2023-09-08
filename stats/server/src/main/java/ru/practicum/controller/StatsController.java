@@ -23,14 +23,14 @@ public class StatsController {
     private final StatsService statsService;
 
     @PostMapping("/hit")
-    public ResponseEntity<Void> addUser(@RequestBody @Valid EndpointHitDto endpointHitDto) {
+    public ResponseEntity<Void> addEndpointHit(@RequestBody @Valid EndpointHitDto endpointHitDto) {
         log.info("StatsController: receive POST request for add new Hit user with body={}", endpointHitDto);
         statsService.addHitStats(endpointHitDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<List<ViewStatsDto>> getUserById(
+    public ResponseEntity<List<ViewStatsDto>> getViewStats(
             @RequestParam(value = "start")
             @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
             @RequestParam(value = "end")

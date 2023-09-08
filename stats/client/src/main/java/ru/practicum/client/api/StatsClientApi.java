@@ -9,14 +9,14 @@ import java.util.List;
 public interface StatsClientApi {
     ResponseEntity<Object> addEndpointHit(EndpointHitDto endpointHitDto);
 
-    Object getViewStats(
+    ResponseEntity<Object> getViewStats(
             LocalDateTime start,
             LocalDateTime end,
             List<String> uris,
             boolean isUniq
     );
 
-    Object getViewStats(
+    ResponseEntity<Object> getViewStats(
             LocalDateTime start,
             LocalDateTime end,
             boolean isUniq

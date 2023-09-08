@@ -1,11 +1,8 @@
 package ru.practicum.client;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.client.api.StatsClientApi;
 import ru.practicum.dto.EndpointHitDto;
@@ -15,12 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
 public class StatsClient extends BaseClient implements StatsClientApi {
     private static final String API_PREFIX = "";
 
-    @Autowired
-    public StatsClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
+    public StatsClient(String serverUrl, RestTemplateBuilder builder) {
         super(
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl + API_PREFIX))
@@ -35,24 +30,24 @@ public class StatsClient extends BaseClient implements StatsClientApi {
     }
 
     @Override
-    public Object getViewStats(
+    public ResponseEntity<Object> getViewStats(
             LocalDateTime start,
             LocalDateTime end,
             List<String> uris,
             boolean isUniq
     ) {
         Map<String, Object> parameters = prepareParameters(start, end, uris, isUniq);
-        return get("/stats", parameters).getBody();
+        return get("/stats?start={start}&end={end}&uris={uris}&unique={isUniq}", parameters);
     }
 
     @Override
-    public Object getViewStats(
+    public ResponseEntity<Object> getViewStats(
             LocalDateTime start,
             LocalDateTime end,
             boolean isUniq
     ) {
         Map<String, Object> parameters = prepareParameters(start, end, null, isUniq);
-        return get("/stats", parameters).getBody();
+        return get("/stats?start={start}&end={end}&unique={isUniq}", parameters);
     }
 
     private Map<String, Object> prepareParameters(
@@ -61,11 +56,16 @@ public class StatsClient extends BaseClient implements StatsClientApi {
             List<String> uris,
             boolean isUniq
     ) {
+
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("start", start);
-        parameters.put("end", end);
+        parameters.put("start", start.toString().replace("T", " "));
+        parameters.put("end", end.toString().replace("T", " "));
         if (uris != null) {
-            parameters.put("uris", uris);
+            String urisParam = "";
+            for (String uri : uris) {
+                urisParam = String.join(",", uri);
+            }
+            parameters.put("uris", urisParam);
         }
         parameters.put("isUniq", isUniq);
         return parameters;
