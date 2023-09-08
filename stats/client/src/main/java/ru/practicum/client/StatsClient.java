@@ -56,16 +56,11 @@ public class StatsClient extends BaseClient implements StatsClientApi {
             List<String> uris,
             boolean isUniq
     ) {
-
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("start", start.toString().replace("T", " "));
         parameters.put("end", end.toString().replace("T", " "));
         if (uris != null) {
-            String urisParam = "";
-            for (String uri : uris) {
-                urisParam = String.join(",", uri);
-            }
-            parameters.put("uris", urisParam);
+            parameters.put("uris", String.join(",", uris));
         }
         parameters.put("isUniq", isUniq);
         return parameters;
