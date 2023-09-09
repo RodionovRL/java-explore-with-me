@@ -1,7 +1,7 @@
 package ru.practicum.client.api;
 
 import org.springframework.http.ResponseEntity;
-import ru.practicum.dto.EndpointHitDto;
+import ru.practicum.stats.dto.EndpointHitDto;
 
 import java.time.LocalDateTime;
 import java.util.List;

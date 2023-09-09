@@ -1,7 +1,7 @@
 package ru.practicum.client.mapper;
 
 import org.mapstruct.Mapper;
-import ru.practicum.dto.ViewStatsDto;
+import ru.practicum.stats.dto.ViewStatsDto;
 
 import java.util.List;
 

@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.client.api.StatsClientApi;
-import ru.practicum.dto.EndpointHitDto;
+import ru.practicum.stats.dto.EndpointHitDto;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
