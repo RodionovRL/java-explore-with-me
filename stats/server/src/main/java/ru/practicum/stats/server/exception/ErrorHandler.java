@@ -39,6 +39,12 @@ public class ErrorHandler {
         return new ResponseEntity<>(e.getReason(), e.getStatus());
     }
 
+    @ExceptionHandler(InvalidDateRangeException.class)
+    public ResponseEntity<String> handleInvalidDateRangeException(final InvalidDateRangeException e) {
+        log.error("InvalidDateRangeException: {}", e.getMessage());
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse errorThrowableException(final Throwable e) {
