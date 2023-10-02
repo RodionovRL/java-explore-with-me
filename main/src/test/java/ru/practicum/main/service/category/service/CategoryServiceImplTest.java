@@ -36,6 +36,7 @@ class CategoryServiceImplTest {
     private ArgumentCaptor<Category> categoryArgumentCaptor;
     @Captor
     private ArgumentCaptor<Long> longArgumentCaptor;
+
     @Test
     void addCategory() {
         when(categoryMapper.toCategory(newCategoryDto)).thenReturn(newCategory);
@@ -82,16 +83,16 @@ class CategoryServiceImplTest {
         Category categoryForSave = categoryArgumentCaptor.getValue();
 
         assertAll(
-        () ->  assertEquals(categoryDtoAfter, returnedCategoryDto),
-        () ->  assertNotEquals(newCategoryDto.getId(), categoryForSave.getId()),
-        () ->  assertEquals(oldCategory.getId(), categoryForSave.getId()),
-        () ->  assertEquals(newCategoryDto.getName(), categoryForSave.getName()),
-        () ->  verify(categoryRepository).findById(categoryId),
-        () ->  verify(categoryMapper).toCategory(newCategoryDto),
-        () ->  verify(categoryMapper).toCategoryDto(categoryAfter)
+                () -> assertEquals(categoryDtoAfter, returnedCategoryDto),
+                () -> assertNotEquals(newCategoryDto.getId(), categoryForSave.getId()),
+                () -> assertEquals(oldCategory.getId(), categoryForSave.getId()),
+                () -> assertEquals(newCategoryDto.getName(), categoryForSave.getName()),
+                () -> verify(categoryRepository).findById(categoryId),
+                () -> verify(categoryMapper).toCategory(newCategoryDto),
+                () -> verify(categoryMapper).toCategoryDto(categoryAfter)
         );
     }
-    
+
     @Test
     void updateCategory_whenCategoryNotFound_thenNotFoundException() {
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
@@ -99,7 +100,7 @@ class CategoryServiceImplTest {
         assertThrows(NotFoundException.class,
                 () -> categoryService.getCategoryByIdPub(categoryId));
     }
-    
+
     @Test
     void deleteCategoryById() {
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(newCategory));
@@ -124,7 +125,7 @@ class CategoryServiceImplTest {
     }
 
     @Test
-    void getCategoryById(){
+    void getCategoryById() {
 
     }
 
