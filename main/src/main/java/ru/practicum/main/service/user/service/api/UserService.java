@@ -7,13 +7,9 @@ import java.util.Collection;
 import java.util.List;
 
 public interface UserService {
-    UserDto addUser(UserShotDto newUserDto);
-//
-//    UserDto getUserById(Long id);
-//
-//    UserDto updateUser(long userId, UserDto userDto);
-//
-    Collection<UserDto> getAllUsers(List<Long> ids, int from, int size);
+    UserDto addUserAdmin(UserShotDto newUserDto);
 
-    void deleteUserById(Long id);
+    Collection<UserDto> getAllUsersAdmin(List<Long> ids, int from, int size);
+
+    void deleteUserByIdAdmin(Long id);
 }

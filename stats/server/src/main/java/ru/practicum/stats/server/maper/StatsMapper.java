@@ -14,6 +14,8 @@ public interface StatsMapper {
     @Mapping(target = "id", ignore = true)
     EndpointHit toEndpointHit(EndpointHitDto endpointHitDto);
 
+    EndpointHitDto toEndpointHitDto(EndpointHit endpointHit);
+
     ViewStatsDto toViewStatsDto(ViewStats viewStats);
 
     List<ViewStatsDto> toViewStatsDtoList(List<ViewStats> viewStats);

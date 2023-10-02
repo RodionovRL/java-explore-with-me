@@ -15,5 +15,5 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     User toUser(UserShotDto userShotDto);
 
-    List<UserDto> map(List<User> users);
+    List<UserDto> toDtoList(List<User> users);
 }

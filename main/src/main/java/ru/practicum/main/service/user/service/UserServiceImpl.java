@@ -14,7 +14,6 @@ import ru.practicum.main.service.user.repository.api.UserRepository;
 import ru.practicum.main.service.user.service.api.UserService;
 import ru.practicum.main.service.utils.PageRequestUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -27,45 +26,16 @@ public class UserServiceImpl implements UserService {
 
     @Transactional()
     @Override
-    public UserDto addUser(UserShotDto newUserDto) {
+    public UserDto addUserAdmin(UserShotDto newUserDto) {
         User newUser = userMapper.toUser(newUserDto);
         User addedUser = userRepository.save(newUser);
         log.info("userService: was add user={}", addedUser);
         return userMapper.toUserDto(addedUser);
     }
-//
-//    @Transactional(readOnly = true)
-//    @Override
-//    public UserDto getUserById(Long userId) {
-//        User user = findUserById(userId);
-//        log.info("userService: was returned user={}, by id={}", user, userId);
-//        return userMapper.toUserDto(user);
-//    }
-//
-//    @Transactional
-//    @Override
-//    public UserDto updateUser(long userId, UserDto userDto) {
-//        User oldUser = findUserById(userId);
-//        User newUser = userMapper.toUser(userDto);
-//        newUser.setId(userId);
-//
-//        if (Objects.isNull(newUser.getName())) {
-//            newUser.setName(oldUser.getName());
-//        }
-//
-//        if (Objects.isNull(newUser.getEmail())) {
-//            newUser.setEmail(oldUser.getEmail());
-//        }
-//
-//        User updatedUser = userRepository.save(newUser);
-//        log.info("userService: old user={} update to new user={}", oldUser, updatedUser);
-//
-//        return userMapper.toUserDto(updatedUser);
-//    }
 
     @Transactional(readOnly = true)
     @Override
-    public List<UserDto> getAllUsers(List<Long> ids, int from, int size) {
+    public List<UserDto> getAllUsersAdmin(List<Long> ids, int from, int size) {
         Pageable pageable = PageRequestUtil.of(from, size);
         List<User> users;
         if (ids == null || ids.isEmpty()) {
@@ -74,12 +44,12 @@ public class UserServiceImpl implements UserService {
             users = userRepository.findAllByIdIn(ids, pageable);
         }
         log.info("userService: returned all {} users", users.size());
-        return userMapper.map(users);
+        return userMapper.toDtoList(users);
     }
 
     @Transactional
     @Override
-    public void deleteUserById(Long id) {
+    public void deleteUserByIdAdmin(Long id) {
         findUserById(id);
         userRepository.deleteById(id);
         log.info("userService: delete user with id={}", id);

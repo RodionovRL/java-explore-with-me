@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.main.service.user.dto.UserDto;
 import ru.practicum.main.service.user.dto.UserShotDto;
 import ru.practicum.main.service.user.dto.mapper.UserMapper;
@@ -15,10 +16,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+import static ru.practicum.main.service.utils.PageRequestUtil.DEFAULT_FROM;
+import static ru.practicum.main.service.utils.PageRequestUtil.DEFAULT_SIZE;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
-
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -31,12 +33,8 @@ class UserServiceImplTest {
     final long userId = 1L;
     final String userName = "new User";
     final String email = "newUser@mail.com";
-
-    @Captor
-    private ArgumentCaptor<User> userArgumentCaptor;
-
-    @Captor
-    private ArgumentCaptor<Long> longArgumentCaptor;
+    int from = Integer.parseInt(DEFAULT_FROM);
+    int size = Integer.parseInt(DEFAULT_SIZE);
 
     @Test
     void addUser_whenAddUser_thenUserAdded() {
@@ -47,7 +45,7 @@ class UserServiceImplTest {
         when(userRepository.save(newUser)).thenReturn(newUser);
         when(userMapper.toUserDto(newUser)).thenReturn(newUserDto);
 
-        UserDto addedUserDto = userService.addUser(newUserShotDto);
+        UserDto addedUserDto = userService.addUserAdmin(newUserShotDto);
 
         InOrder inOrder = inOrder(userMapper, userRepository, userMapper);
 
@@ -60,201 +58,26 @@ class UserServiceImplTest {
                 () -> assertEquals(addedUserDto.getName(), newUserShotDto.getName())
         );
     }
-//
-//    @Test
-//    void getUserById_whenUserFound_thenReturnedUser() {
-//        User expectedUser = new User();
-//        UserDto expectedUserDto = new UserDto();
-//        when(userRepository.findById(userId)).thenReturn(Optional.of(expectedUser));
-//        when(userMapper.toUserDto(expectedUser)).thenReturn(expectedUserDto);
-//
-//        UserDto returnedUserDto = userService.getUserById(userId);
-//
-//        assertEquals(expectedUserDto, returnedUserDto);
-//        verify(userRepository).findById(userId);
-//        verify(userMapper).toUserDto(expectedUser);
-//    }
-//
-//    @Test
-//    void getUserById_whenUserNotFound_thenNotFoundException() {
-//        when(userRepository.findById(userId)).thenReturn(Optional.empty());
-//
-//        assertThrows(NotFoundException.class,
-//                () -> userService.getUserById(userId));
-//    }
-//
-//
-//    @Test
-//    void updateUser_whenUserFoundAndNewNameAndNewEmailNotNull_thenUpdateNameAndEmailOnly() {
-//        UserDto newUserDto = new UserDto(userId + 1, "new" + userName, "new" + email);
-//        User oldUser = new User(userId, userName, email);
-//        User newUser = new User(
-//                newUserDto.getId(),
-//                newUserDto.getName(),
-//                newUserDto.getEmail()
-//        );
-//        User userAfter = new User(
-//                oldUser.getId(),
-//                newUser.getName(),
-//                newUser.getEmail()
-//        );
-//        UserDto userDtoAfter = new UserDto(
-//                userAfter.getId(),
-//                userAfter.getName(),
-//                userAfter.getEmail()
-//        );
-//        when(userRepository.findById(userId)).thenReturn(Optional.of(oldUser));
-//        when(userMapper.toUser(newUserDto)).thenReturn(newUser);
-//        when(userRepository.save(newUser)).thenReturn(userAfter);
-//        when(userMapper.toUserDto(userAfter)).thenReturn(userDtoAfter);
-//
-//        UserDto returnedUserDto = userService.updateUser(userId, newUserDto);
-//
-//        verify(userRepository).save(userArgumentCaptor.capture());
-//        User userForSave = userArgumentCaptor.getValue();
-//
-//        assertEquals(userDtoAfter, returnedUserDto);
-//        assertNotEquals(newUserDto.getId(), userForSave.getId());
-//        assertEquals(oldUser.getId(), userForSave.getId());
-//        assertEquals(newUserDto.getName(), userForSave.getName());
-//        assertEquals(newUserDto.getEmail(), userForSave.getEmail());
-//
-//        verify(userRepository).findById(userId);
-//        verify(userMapper).toUser(newUserDto);
-//        verify(userMapper).toUserDto(userAfter);
-//    }
-//
-//    @Test
-//    void updateUser_whenUserFoundAndNewNameNullAndNewEmailNotNull_thenUpdateEmailOnly() {
-//        UserDto newUserDto = new UserDto();
-//        newUserDto.setId(userId + 1);
-//        newUserDto.setName(null);
-//        newUserDto.setEmail("new" + email);
-//
-//        User oldUser = new User();
-//        oldUser.setId(userId);
-//        oldUser.setName(userName);
-//        oldUser.setEmail(email);
-//
-//        User newUser = new User();
-//        newUser.setId(userId + 1);
-//        newUser.setName(null);
-//        newUser.setEmail("new" + email);
-//
-//        User userAfter = new User();
-//        userAfter.setId(userId);
-//        userAfter.setName(userName);
-//        userAfter.setEmail("new" + email);
-//
-//        UserDto userDtoAfter = new UserDto();
-//        userDtoAfter.setId(userId);
-//        userDtoAfter.setName(userName);
-//        userDtoAfter.setEmail("new" + email);
-//
-//        when(userRepository.findById(userId)).thenReturn(Optional.of(oldUser));
-//        when(userMapper.toUser(newUserDto)).thenReturn(newUser);
-//        when(userRepository.save(newUser)).thenReturn(userAfter);
-//        when(userMapper.toUserDto(userAfter)).thenReturn(userDtoAfter);
-//
-//        UserDto returnedUserDto = userService.updateUser(userId, newUserDto);
-//        verify(userRepository).save(userArgumentCaptor.capture());
-//        User userForSave = userArgumentCaptor.getValue();
-//
-//        assertEquals(userDtoAfter, returnedUserDto);
-//        assertNotEquals(newUserDto.getId(), userForSave.getId());
-//        assertEquals(oldUser.getId(), userForSave.getId());
-//        assertEquals(oldUser.getName(), userForSave.getName());
-//        assertEquals(newUserDto.getEmail(), userForSave.getEmail());
-//
-//        verify(userRepository).findById(userId);
-//        verify(userMapper).toUser(newUserDto);
-//        verify(userMapper).toUserDto(userAfter);
-//    }
-//
-//    @Test
-//    void updateUser_whenUserFoundAndNewNameNullAndNewEmailNull_thenNotUpdateNameAndMail() {
-//        UserDto newUserDto = new UserDto();
-//        newUserDto.setId(userId + 1);
-//        newUserDto.setName(null);
-//        newUserDto.setEmail(null);
-//
-//        User oldUser = new User();
-//        oldUser.setId(userId);
-//        oldUser.setName(userName);
-//        oldUser.setEmail(email);
-//
-//        User newUser = new User();
-//        newUser.setId(userId + 1);
-//        newUser.setName(null);
-//        newUser.setEmail(null);
-//
-//        User userAfter = new User();
-//        userAfter.setId(userId);
-//        userAfter.setName(userName);
-//        userAfter.setEmail(email);
-//
-//        UserDto userDtoAfter = new UserDto();
-//        userDtoAfter.setId(userId);
-//        userDtoAfter.setName(userName);
-//        userDtoAfter.setEmail(email);
-//
-//        when(userRepository.findById(userId)).thenReturn(Optional.of(oldUser));
-//        when(userMapper.toUser(newUserDto)).thenReturn(newUser);
-//        when(userRepository.save(newUser)).thenReturn(userAfter);
-//        when(userMapper.toUserDto(userAfter)).thenReturn(userDtoAfter);
-//
-//        UserDto returnedUserDto = userService.updateUser(userId, newUserDto);
-//        verify(userRepository).save(userArgumentCaptor.capture());
-//        User userForSave = userArgumentCaptor.getValue();
-//
-//        assertEquals(userDtoAfter, returnedUserDto);
-//        assertNotEquals(newUserDto.getId(), userForSave.getId());
-//        assertEquals(oldUser.getId(), userForSave.getId());
-//        assertEquals(oldUser.getName(), userForSave.getName());
-//        assertEquals(oldUser.getEmail(), userForSave.getEmail());
-//
-//        verify(userRepository).findById(userId);
-//        verify(userMapper).toUser(newUserDto);
-//        verify(userMapper).toUserDto(userAfter);
-//    }
 
     @Test
-    void getAllUsers_whenNeedToReturnAllUsers_returnAllUsers() {
+    void getAllUsers_whenNeedToReturnUsersInIds_returnUsersInIds() {
         User user1 = new User("1" + userName, userId + 1, "1" + email);
         User user2 = new User("2" + userName, userId + 2, "2" + email);
-        User user3 = new User("3" + userName, userId + 3, "3" + email);
-        List<User> userList = List.of(user1, user2, user3);
+        List<User> userList = List.of(user1, user2);
         UserDto userDto1 = new UserDto("1" + userName, userId + 1, "1" + email);
         UserDto userDto2 = new UserDto("2" + userName, userId + 2, "2" + email);
-        UserDto userDto3 = new UserDto("3" + userName, userId + 3, "3" + email);
-        List<UserDto> userDtoList = List.of(userDto1, userDto2, userDto3);
-        when(userRepository.findAll()).thenReturn((userList));
-        when(userMapper.map(userList)).thenReturn(userDtoList);
+        List<UserDto> userDtoList = List.of(userDto1, userDto2);
+        List<Long> ids = List.of(user1.getId(), user2.getId());
+        when(userRepository.findAllByIdIn(eq(ids), any(Pageable.class))).thenReturn((userList));
+        when(userMapper.toDtoList(userList)).thenReturn(userDtoList);
 
-        List<UserDto> returnedUsersDto = userService.getAllUsers(ids, from, size);
+        List<UserDto> returnedUsersDto = userService.getAllUsersAdmin(ids, from, size);
         InOrder inOrder = inOrder(userRepository, userMapper);
 
         assertAll(
-                () -> inOrder.verify(userRepository).findAll(),
-                () -> inOrder.verify(userMapper).map(userList),
+                () -> inOrder.verify(userRepository).findAllByIdIn(eq(ids), any(Pageable.class)),
+                () -> inOrder.verify(userMapper).toDtoList(userList),
                 () -> assertEquals(userDtoList, returnedUsersDto)
         );
-    }
-//
-//    @Test
-//    void updateUser_whenUserNotFound_thenNotFoundException() {
-//        when(userRepository.findById(userId)).thenReturn(Optional.empty());
-//
-//        assertThrows(NotFoundException.class,
-//                () -> userService.updateUser(userId, new UserDto()));
-//    }
-
-    @Test
-    void deleteUserById() {
-        userService.deleteUserById(userId);
-
-        verify(userRepository).deleteById(longArgumentCaptor.capture());
-        Long idForDelete = longArgumentCaptor.getValue();
-        assertEquals(userId, idForDelete);
     }
 }
