@@ -5,6 +5,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -167,6 +168,18 @@ public class ErrorHandler {
                 .message(ex.getMessage())
                 .reason("For the requested operation the conditions are not met.")
                 .httpStatus(HttpStatus.BAD_REQUEST)
+                .timeStamp(now())
+                .build();
+        return new ResponseEntity<>(apiError, apiError.getHttpStatus());
+    }
+
+    @ExceptionHandler(HttpMessageConversionException.class)
+    public ResponseEntity<ApiError> handleHttpMessageConversionException(final HttpMessageConversionException ex) {
+        log.error("EH: HttpMessageConversionException: {}", ex.getMessage());
+        ApiError apiError = ApiError.builder()
+                .message(ex.getMessage())
+                .reason("Event must be published.")
+                .httpStatus(HttpStatus.CONFLICT)
                 .timeStamp(now())
                 .build();
         return new ResponseEntity<>(apiError, apiError.getHttpStatus());
