@@ -41,7 +41,6 @@ CREATE TABLE IF NOT EXISTS events
     request_moderation BOOLEAN,
     state              VARCHAR(16)                 DEFAULT 'PENDING',
     title              VARCHAR(120)                                                              NOT NULL,
-    views              BIGINT                                                                       NOT NULL,
     CONSTRAINT pk_events PRIMARY KEY (id)
 );
 

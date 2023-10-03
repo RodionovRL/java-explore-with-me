@@ -12,7 +12,7 @@ import ru.practicum.stats.dto.EndpointHitDto;
 import ru.practicum.stats.dto.ViewStatsDto;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class StatsClient {
+    private final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final WebClient client;
 
     @Autowired
@@ -68,7 +69,7 @@ public class StatsClient {
         ResponseEntity<Void> result = postHit(endpointHitDto);
         if (result.getStatusCode().is5xxServerError()) {
             log.error("Stats-Server error. ErrorStatus={}", result.getStatusCode());
-           throw new RuntimeException(
+            throw new RuntimeException(
                     String.format("Stats-Server error. ErrorStatus=%s", result.getStatusCode()));
         }
     }
@@ -92,8 +93,8 @@ public class StatsClient {
     ) {
         Map<String, Object> parameters = new HashMap<>();
 
-        parameters.put("start", start.truncatedTo(ChronoUnit.SECONDS).toString().replace("T", " "));
-        parameters.put("end", end.truncatedTo(ChronoUnit.SECONDS).toString().replace("T", " "));
+        parameters.put("start", start.format(format));
+        parameters.put("end", end.format(format));
         if (ids != null) {
             List<String> uris = ids.stream()
                     .map(id -> "/events/" + id)

@@ -102,7 +102,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto updateEventPrivate(long userId, long eventId, UpdateEventUserRequest updateEventPrivateDto) {
         findUserById(userId);
         Event oldEvent = findEventByInitiatorIdAndEventId(userId, eventId);
-        if (oldEvent.getState().equals(EventState.PUBLISHED)) {
+        if (oldEvent.getState() == EventState.PUBLISHED) {
             throw new NotChangeableException("Event must not be published");
         }
         Event newEvent = startEventUpdate(oldEvent, eventMapper.toEvent(updateEventPrivateDto),
@@ -158,7 +158,7 @@ public class EventServiceImpl implements EventService {
             statusUpdateResult.setConfirmedRequests(requestMapper.toDtoList(confirmRequests(requests, event)));
             return statusUpdateResult;
         }
-        if (statusUpdateRequest.getStatus().equals(RequestState.REJECTED)) {
+        if (statusUpdateRequest.getStatus() == RequestState.REJECTED) {
             List<ParticipationRequest> rejectedRequests = rejectRequests(requests);
             statusUpdateResult.setRejectedRequests(requestMapper.toDtoList(rejectedRequests));
             return statusUpdateResult;
@@ -204,17 +204,17 @@ public class EventServiceImpl implements EventService {
         } else {
             switch (updateEventAdminDto.getStateAction()) {
                 case PUBLISH_EVENT: {
-                    if (oldEvent.getState().equals(EventState.PUBLISHED)) {
+                    if (oldEvent.getState() == (EventState.PUBLISHED)) {
                         throw new NotChangeableException("Event must not be published");
                     }
-                    if (oldEvent.getState().equals(EventState.CANCELED)) {
+                    if (oldEvent.getState() == (EventState.CANCELED)) {
                         throw new NotChangeableException("Event must not be canceled");
                     }
                     newEvent.setState(EventState.PUBLISHED);
                     break;
                 }
                 case REJECT_EVENT: {
-                    if (oldEvent.getState().equals(EventState.PUBLISHED)) {
+                    if (oldEvent.getState() == (EventState.PUBLISHED)) {
                         throw new NotChangeableException("Event must not be published");
                     }
                     newEvent.setState(EventState.CANCELED);
@@ -301,21 +301,20 @@ public class EventServiceImpl implements EventService {
             start = now();
         }
 
-        Pageable pageable;
-        switch (eventSort) {
-            case EVENT_DATE:
+        Pageable pageable = PageRequestUtil.of(from, size);
+        if (eventSort == EventSort.EVENT_DATE) {
                 pageable = PageRequestUtil.of(from, size, Sort.by("eventDate"));
-                break;
-            case VIEWS:
-                pageable = PageRequestUtil.of(from, size, Sort.by(Sort.Direction.DESC, "views"));
-                break;
-            default:
-                pageable = PageRequestUtil.of(from, size);
         }
 
         List<Event> foundEvents = eventRepository
                 .findEventPublic(EventState.PUBLISHED, text, categoryIds, start, end, onlyAvailable, pageable)
                 .orElse(Collections.emptyList());
+
+        if (eventSort == EventSort.VIEWS) {
+            foundEvents = foundEvents.stream()
+                    .sorted(Event::compareTo)
+                    .collect(Collectors.toList());
+        }
 
         List<Long> eventsIds = foundEvents.stream()
                 .map(Event::getId)
@@ -343,6 +342,7 @@ public class EventServiceImpl implements EventService {
                 .timestamp(now())
                 .build()
         );
+
         return eventMapper.toEventsShortDtoList(foundEvents);
     }
 
@@ -350,7 +350,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto getEventByIdPublic(Long id, HttpServletRequest request) {
         Event event = findEventById(id);
-        if (!event.getState().equals(EventState.PUBLISHED)) {
+        if (event.getState() != EventState.PUBLISHED) {
             throw new NotFoundException(String.format("Published event with id=%d not found", id));
         }
         List<ViewStatsDto> viewStats = statsClient.getViewStats(
@@ -392,7 +392,7 @@ public class EventServiceImpl implements EventService {
                         new NotFoundException(String.format("requests with ids=%s for eventId=%d not found",
                                 requestsIds, eventId)));
         requests.stream()
-                .filter(r -> !RequestState.PENDING.equals(r.getStatus()))
+                .filter(r -> RequestState.PENDING != (r.getStatus()))
                 .findFirst()
                 .ifPresent(r -> {
                     throw new NotChangeableException("All Request must have status PENDING");
@@ -402,7 +402,7 @@ public class EventServiceImpl implements EventService {
 
     private List<ParticipationRequest> rejectRequests(List<ParticipationRequest> requests) {
         List<ParticipationRequest> requestsForCancel = requests.stream()
-                .filter(r -> r.getStatus().equals(RequestState.PENDING))
+                .filter(r -> r.getStatus() == (RequestState.PENDING))
                 .peek(r -> r.setStatus(RequestState.REJECTED))
                 .collect(Collectors.toList());
 
@@ -411,7 +411,7 @@ public class EventServiceImpl implements EventService {
 
     private List<ParticipationRequest> confirmRequests(List<ParticipationRequest> requests, Event event) {
         List<ParticipationRequest> requestsForConfirm = requests.stream()
-                .filter(r -> r.getStatus().equals(RequestState.PENDING))
+                .filter(r -> r.getStatus() == (RequestState.PENDING))
                 .peek(r -> r.setStatus(RequestState.CONFIRMED))
                 .collect(Collectors.toList());
         event.setConfirmedRequests(event.getConfirmedRequests() + requestsForConfirm.size());

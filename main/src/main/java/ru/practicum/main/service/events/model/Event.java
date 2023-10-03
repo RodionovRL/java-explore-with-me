@@ -19,7 +19,7 @@ import static java.time.LocalDateTime.now;
 @Table(name = "events")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Event {
+public class Event implements Comparable<Event> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -62,6 +62,13 @@ public class Event {
     @Column(name = "title")
     private String title;
     @Builder.Default
-    @Column(name = "views")
+    @Transient
     private long views = 0;
+
+    @Override
+    public int compareTo(Event e) {
+        return Long.compare(this.views, e.views);
+    }
+
+
 }
