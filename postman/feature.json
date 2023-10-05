@@ -196,12 +196,14 @@
 									"    pm.expect(target[1]).to.have.property('user');\r",
 									"    pm.expect(target[1]).to.have.property('friend');\r",
 									"});\r",
-									"\r",
+									"console.log(sourse);\r",
+									"console.log(sourse1);\r",
+									"console.log(target);\r",
 									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
 									"    pm.expect(sourse.user.id).equal(target[0].user.id, 'Идентификатор пользователя должен соответствовать идентификатору в запросе');\r",
-									"    pm.expect(sourse.friend.id).equal(target[0].friend.id, 'Название категории должно соответствовать названию категории с указанным идентификатором');\r",
+									"    pm.expect(sourse.friend.id).equal(target[0].friend.id, 'Идентификатор друга должен соответствовать идентификатору в запросе');\r",
 									"    pm.expect(sourse1.user.id).equal(target[1].user.id, 'Идентификатор пользователя должен соответствовать идентификатору в запросе');\r",
-									"    pm.expect(sourse1.friend.id).equal(target[1].friend.id, 'Название категории должно соответствовать названию категории с указанным идентификатором');    \r",
+									"    pm.expect(sourse1.friend.id).equal(target[1].friend.id, 'Идентификатор друга должен соответствовать идентификатору в запросе');    \r",
 									"});"
 								],
 								"type": "text/javascript"
