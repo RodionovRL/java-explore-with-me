@@ -184,7 +184,7 @@
 									"\r",
 									"const sourse = pm.collectionVariables.get('friendship');\r",
 									"const sourse1 = pm.collectionVariables.get('friendship1');\r",
-									"console.log(pm.collectionVariables.get('friendship1'));\r",
+									"console.log(pm.collectionVariables);\r",
 									"const target = pm.response.json();\r",
 									"pm.test(\"Должено быть найдено два друга\", function () {\r",
 									"    pm.expect(target.length).to.eql(2);\r",
