@@ -23,6 +23,8 @@ public class ParticipationRequest {
     private long id;
     @Column(name = "requester_id")
     private long requesterId;
+    @Column(name = "subscription_permit")
+    private boolean subscriptionPermit;
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private RequestState status;

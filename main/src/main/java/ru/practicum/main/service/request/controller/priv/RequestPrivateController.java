@@ -19,13 +19,15 @@ public class RequestPrivateController {
     private final RequestService requestService;
 
     @PostMapping("")
-    public ResponseEntity<ParticipationRequestDto> addRequest(
+    public ResponseEntity<ParticipationRequestDto> addRequestPrivate(
             @PathVariable(value = "userId") @Positive long userId,
-            @RequestParam(value = "eventId") @Positive long eventId
+            @RequestParam(value = "eventId") @Positive long eventId,
+            @RequestParam(value = "subscriptionPermit", defaultValue = "true") boolean subscriptionPermit
     ) {
-        log.info("RequestPrivateController: " +
-                "receive POST request for add new ParticipationRequest for userId={}, eventId={}", userId, eventId);
-        ParticipationRequestDto requestDto = requestService.addRequest(userId, eventId);
+        log.info("RequestPrivateController: POST request " +
+                        "for add new ParticipationRequest for userId={}, eventId={}, subscriptionPermit={}",
+                userId, eventId, subscriptionPermit);
+        ParticipationRequestDto requestDto = requestService.addRequestPrivate(userId, eventId, subscriptionPermit);
         return new ResponseEntity<>(requestDto, HttpStatus.CREATED);
     }
 
@@ -50,5 +52,17 @@ public class RequestPrivateController {
         return new ResponseEntity<>(canceledRequestDto, HttpStatus.OK);
     }
 
-
+    @PatchMapping("/{requestId}")
+    public ResponseEntity<ParticipationRequestDto> requestSubscriptionPermitChange(
+            @PathVariable(value = "userId") @Positive long userId,
+            @PathVariable(value = "requestId") @Positive long requestId,
+            @RequestParam(value = "subscriptionPermit") boolean subscriptionPermit
+    ) {
+        log.info("RequestPrivateController: PATCH request from userId={}" +
+                        " for change subscriptionPermit={} for ParticipationRequest requestId={}",
+                userId, subscriptionPermit, requestId);
+        ParticipationRequestDto changedRequestDto =
+                requestService.requestSubscriptionPermitChange(userId, requestId, subscriptionPermit);
+        return new ResponseEntity<>(changedRequestDto, HttpStatus.OK);
+    }
 }

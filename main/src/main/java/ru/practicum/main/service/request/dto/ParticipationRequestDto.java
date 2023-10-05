@@ -17,5 +17,6 @@ public class ParticipationRequestDto {
     private int event;
     private int id;
     private int requester;
+    private boolean subscriptionPermit;
     private RequestState status;
 }

@@ -7,7 +7,9 @@ import java.util.List;
 public interface RequestService {
     List<ParticipationRequestDto> getRequestsPrivate(long userId);
 
-    ParticipationRequestDto addRequest(long userId, long eventId);
+    ParticipationRequestDto addRequestPrivate(long userId, long eventId, boolean subscriptAccept);
 
     ParticipationRequestDto cancelOwnRequest(long userId, long requestId);
+
+    ParticipationRequestDto requestSubscriptionPermitChange(long userId, long requestId, boolean subscriptionPermit);
 }
