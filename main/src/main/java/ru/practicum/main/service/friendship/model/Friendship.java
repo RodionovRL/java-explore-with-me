@@ -26,7 +26,7 @@ public class Friendship {
     @Override
     public String toString() {
         return "friendship{" +
-                "id=" + id +", " +
+                "id=" + id + ", " +
                 "user=" + user.toString() + ", " +
                 "friend=" + friend.toString() + "}";
     }
