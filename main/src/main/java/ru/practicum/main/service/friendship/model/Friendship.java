@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Builder
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "friends")
 @NoArgsConstructor
@@ -23,4 +22,12 @@ public class Friendship {
     @ManyToOne
     @JoinColumn(name = "friend_id")
     private User friend;
+
+    @Override
+    public String toString() {
+        return "friendship{" +
+                "id=" + id +", " +
+                "user=" + user.toString() + ", " +
+                "friend=" + friend.toString() + "}";
+    }
 }

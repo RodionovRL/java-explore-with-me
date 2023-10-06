@@ -3,6 +3,7 @@ package ru.practicum.main.service.friendship.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.service.exception.NotFoundException;
 import ru.practicum.main.service.friendship.dto.FriendshipDto;
 import ru.practicum.main.service.friendship.dto.mapper.FriendshipMapper;
@@ -30,6 +31,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     private final RequestRepository requestRepository;
     private final RequestMapper requestMapper;
 
+    @Transactional
     @Override
     public FriendshipDto addNewFriendPrivate(Long userId, Long friendId) {
         User user = findUserById(userId);
@@ -37,7 +39,6 @@ public class FriendshipServiceImpl implements FriendshipService {
         Friendship newFriendship = Friendship.builder()
                 .user(user)
                 .friend(friend)
-//                .confirmed(checkMutualFriendship(userId, friendId))
                 .build();
 
         Friendship addedFriendship = friendshipRepository.save(newFriendship);
@@ -45,6 +46,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         return friendshipMapper.toFriendshipDto(addedFriendship);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Collection<FriendshipDto> getAllUsersFriendsPrivate(Long userId, int from, int size) {
         findUserById(userId);
@@ -55,6 +57,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         return friendshipMapper.toDtoList(allFriendships);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public FriendshipDto getFriendByIdPrivate(long userId, Long friendId) {
         findUserById(userId);
@@ -64,6 +67,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         return friendshipMapper.toFriendshipDto(usersFriendship);
     }
 
+    @Transactional
     @Override
     public void deleteFriendByIdPrivate(long userId, Long friendId) {
         findUserById(userId);
@@ -73,6 +77,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         log.info("userService: deleted friend with id={} from user with id={}", friendId, userId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ParticipationRequestDto> getFriendsRequestsPrivate(Long userId, Long friendId, int from, int size) {
         findUserById(userId);
