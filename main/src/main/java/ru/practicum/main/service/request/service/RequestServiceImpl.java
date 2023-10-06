@@ -35,8 +35,9 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional
     @Override
-    public ParticipationRequestDto addRequest(long userId, long eventId) {
-        ParticipationRequest newParticipationRequest = requestRepository.save(prepareRequest(userId, eventId));
+    public ParticipationRequestDto addRequestPrivate(long userId, long eventId, boolean subscriptionPermit) {
+        ParticipationRequest newParticipationRequest =
+                requestRepository.save(prepareRequest(userId, eventId, subscriptionPermit));
         log.info("requestService: was add participationRequest={}", newParticipationRequest);
         return requestMapper.toParticipationRequestDto(newParticipationRequest);
     }
@@ -61,9 +62,15 @@ public class RequestServiceImpl implements RequestService {
         return requestMapper.toParticipationRequestDto(canceledRequest);
     }
 
+    @Override
+    public ParticipationRequestDto requestSubscriptionPermitChange(
+            long userId, long requestId, boolean subscriptionPermit) {
+        return null;
+    }
 
-    private ParticipationRequest prepareRequest(long userId, long eventId) {
-        User requester = findUserById(userId);
+
+    private ParticipationRequest prepareRequest(long userId, long eventId, boolean subscriptionPermit) {
+        findUserById(userId);
         Event event = findEventById(eventId);
 
         if (event.getInitiator().getId() == userId) {
@@ -81,6 +88,7 @@ public class RequestServiceImpl implements RequestService {
                 .created(now())
                 .eventId(eventId)
                 .requesterId(userId)
+                .subscriptionPermit(subscriptionPermit)
                 .status(RequestState.PENDING)
                 .build();
 
